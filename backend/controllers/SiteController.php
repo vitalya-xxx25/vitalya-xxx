@@ -22,13 +22,9 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['*'],
                         'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['admin'],
                     ],
                 ],
             ],
@@ -79,5 +75,34 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+    
+    public function actionSetRoles() {
+        $role = Yii::$app->authManager->createRole('admin');
+        $role->description = 'Админ';
+        Yii::$app->authManager->add($role);
+
+        $role = Yii::$app->authManager->createRole('user');
+        $role->description = 'Юзер';
+        Yii::$app->authManager->add($role);
+        echo 'Ok';
+    }
+    
+    /**
+        if(Yii::$app->user->can('deleteUser'))
+     * 
+     */
+    public function actionSetPermissions() {
+        $permit = Yii::$app->authManager->createPermission('deleteUser');
+        $permit->description = 'Право удалять пользователя';
+        Yii::$app->authManager->add($permit);
+        echo 'Ok';
+    }
+    
+    public function actionInheritanceRoles() {
+        $role = Yii::$app->authManager->getRole($name);
+        $permit = Yii::$app->authManager->getPermission($permit);
+        Yii::$app->authManager->addChild($role, $permit);
+        echo 'Ok';
     }
 }
